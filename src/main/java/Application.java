@@ -1,5 +1,5 @@
 import entity.ChapterIndex;
-import entity.DmzjCommic;
+import entity.DmzjComic;
 import entity.HtmlPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,8 +21,8 @@ public class Application {
     public static void main(String[] args) throws Exception {
         HtmlPage chaptherIndex = new HtmlPage(chapterIndexUrl, true);
         chaptherIndex.init();
-        DmzjCommic commic = new DmzjCommic();
-        List<ChapterIndex> chapterIndex = commic.getChapterIndexUrls(chaptherIndex.getContent());
-        commic.downloadChapter(chapterIndex, startChapter, endChapter);
+        DmzjComic comic = new DmzjComic();
+        List<ChapterIndex> chapterIndex = comic.getChapterIndexUrls(chaptherIndex.getContent());
+        comic.downloadChapter(chapterIndex, startChapter, endChapter);
     }
 }

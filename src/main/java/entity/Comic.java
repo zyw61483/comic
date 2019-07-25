@@ -9,13 +9,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Commic
+ * Comic
  *
  * @author: zhaoyiwei
  * @date: 2019/7/24 11:29
  */
 @Data
-public abstract class Commic {
+public abstract class Comic {
     private ExecutorService threadPool = Executors.newFixedThreadPool(15);
     private CompletionService<Boolean> completionService = new ExecutorCompletionService<>(threadPool);
     private String name;

@@ -17,14 +17,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * DmzjCommic
+ * DmzjComic
  *
  * @author: zhaoyiwei
  * @date: 2019/7/24 13:58
  */
 @Slf4j
 @Data
-public class DmzjCommic extends Commic {
+public class DmzjComic extends Comic {
 
     private static final String reg = "initIntroData\\((.*?)\\)";
     private static final String chapterReg = "mReader.initData\\((.*?)\\);";

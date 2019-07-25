@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.zyw</groupId>
-    <artifactId>commic</artifactId>
+    <artifactId>comic</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
