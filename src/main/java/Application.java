@@ -19,10 +19,10 @@ public class Application {
     private static Integer endChapter = 7;
 
     public static void main(String[] args) throws Exception {
-        HtmlPage chaptherIndex = new HtmlPage(chapterIndexUrl, true);
-        chaptherIndex.init();
+        HtmlPage chapterIndexPage = new HtmlPage(chapterIndexUrl, true);
+        chapterIndexPage.init();
         DmzjComic comic = new DmzjComic();
-        List<ChapterIndex> chapterIndex = comic.getChapterIndexUrls(chaptherIndex.getContent());
+        List<ChapterIndex> chapterIndex = comic.getChapterIndexUrls(chapterIndexPage.getContent());
         comic.downloadChapter(chapterIndex, startChapter, endChapter);
     }
 }
