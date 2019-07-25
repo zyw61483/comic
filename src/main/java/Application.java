@@ -14,13 +14,15 @@ import java.util.List;
 @Slf4j
 public class Application {
 
-    private static String chapterIndexUrl = "https://m.dmzj.com/info/33365.html";
+    private static String chapterIndexUrl = "https://m.dmzj.com/info/40341.html";
+    private static Integer startChapter = 0;
+    private static Integer endChapter = 7;
 
     public static void main(String[] args) throws Exception {
         HtmlPage chaptherIndex = new HtmlPage(chapterIndexUrl, true);
         chaptherIndex.init();
         DmzjCommic commic = new DmzjCommic();
         List<ChapterIndex> chapterIndex = commic.getChapterIndexUrls(chaptherIndex.getContent());
-        commic.downloadChapter(chapterIndex,0,6);
+        commic.downloadChapter(chapterIndex, startChapter, endChapter);
     }
 }
