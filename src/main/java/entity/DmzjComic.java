@@ -82,7 +82,7 @@ public class DmzjComic extends Comic {
     }
 
     @Override
-    public void downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception {
+    public Integer downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception {
         int picCounts = 0;
         for (ChapterIndex index : list) {
             Pattern r = Pattern.compile("第(.*?)话");
@@ -140,12 +140,7 @@ public class DmzjComic extends Comic {
             }
         }
 
-        for (int i = 1; i < picCounts; i++) {
-            if (super.getThreadPool().take().get()) {
-                System.out.println(picCounts + ":" + i);
-            }
-        }
-        super.shutdown();
+        return picCounts;
     }
 
     private String getBtName(int i) {
