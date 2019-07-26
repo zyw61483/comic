@@ -2,13 +2,20 @@ package entity;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Comic
@@ -32,32 +39,108 @@ public abstract class Comic {
         this.endChapter = endChapter;
     }
 
-    public CompletionService<Boolean> getThreadPool() {
-        return completionService;
-    }
-
     public abstract List<ChapterIndex> getChapterIndexUrls(String content);
 
-    public abstract Chapter getChapter(String content);
+    public abstract Chapter getChapter(String content, String chapterName);
 
-    public abstract Integer downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception;
+//    public abstract Integer downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception;
 
     public void download() throws Exception {
         List<ChapterIndex> chapterIndex = getChapterIndexUrls(this.chapterContent);
-        Integer picCounts = downloadChapter(chapterIndex, startChapter, endChapter);
+        int picCounts = 0;
+        for (ChapterIndex index : chapterIndex) {
+            if (isDownloadThisChapter(index)) {
+                log.info("ChapterIndex:{}", index);
+                HtmlPage chapterPage = new HtmlPage(index.getUrl(), true);
+                Chapter chapterInfo = this.getChapter(chapterPage.getContent(), index.getName());
+                picCounts += downloadChapter(chapterInfo);
+            }
+        }
         this.showProgress(picCounts);
         this.shutdown();
+    }
+
+    private int downloadChapter(Chapter chapterInfo) {
+        List<String> picUrls = chapterInfo.getPicUrls();
+        for (int i = 0; i < picUrls.size(); i++) {
+            String tempUrl = picUrls.get(i);
+            String picUrl = tempUrl.trim().replaceAll(" ", "%20");
+            int name = i;
+            this.getThreadPool().submit(() -> {
+                try {
+                    HtmlPage picPage = new HtmlPage(picUrl, false);
+                    HttpEntity entity = picPage.getEntity();
+                    String pathName = "/pic1/" + chapterInfo.getCommicName() + "/" + chapterInfo.getChapterName();
+                    File dic = new File(pathName);
+                    if (!dic.exists()) {
+                        dic.mkdirs();
+                    }
+                    File file = new File(pathName + getBtName(name) + ".jpg");
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+                    FileOutputStream out = new FileOutputStream(file);
+                    InputStream in = entity.getContent();
+                    byte[] buffer = new byte[4096];
+                    int readLength = 0;
+                    while ((readLength = in.read(buffer)) > 0) {
+                        byte[] bytes = new byte[readLength];
+                        System.arraycopy(buffer, 0, bytes, 0, readLength);
+                        out.write(bytes);
+                    }
+                    out.flush();
+                    out.close();
+                } catch (Exception e) {
+                    log.error("download error", e);
+                    return false;
+                }
+                return true;
+            });
+        }
+        return picUrls.size();
+    }
+
+    private boolean isDownloadThisChapter(ChapterIndex index) {
+        Pattern r = Pattern.compile("第(.*?)话");
+        Matcher m = r.matcher(index.getName());
+        boolean isDownload = false;
+        if (m.find()) {
+            int huaNum = 0;
+            try {
+                huaNum = Integer.parseInt(m.group(1));
+                isDownload = huaNum >= getStartChapter() && huaNum <= getEndChapter();
+            } catch (Exception e) {
+            }
+        }
+        return isDownload;
+    }
+
+    private CompletionService<Boolean> getThreadPool() {
+        return completionService;
     }
 
     private void showProgress(int picCounts) throws Exception {
         for (int i = 1; i < picCounts; i++) {
             if (getThreadPool().take().get()) {
-                log.info("共{}张，目前:{}", picCounts - 1, i);
+                DecimalFormat df = new DecimalFormat("0.00%");
+                log.info("sum:{}，num:{} {}", picCounts - 1, i, df.format((float) i / (picCounts - 1)));
             }
         }
+        log.info("download success");
     }
 
     private void shutdown() {
         threadPool.shutdown();
+    }
+
+    private String getBtName(int i) {
+        int a = i / 26;
+        int y = i % 26;
+        StringBuffer name = new StringBuffer("/");
+        for (int j = 0; j < a; j++) {
+            name.append("z");
+        }
+        name.append((char) (y + 97));
+        return name.toString();
     }
 }

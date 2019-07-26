@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Application {
 
     private static String chapterIndexUrl = "https://m.dmzj.com/info/21097.html";
-    private static Integer startChapter = 10;
-    private static Integer endChapter = 20;
+    private static Integer startChapter = 46;
+    private static Integer endChapter = 50;
 
     public static void main(String[] args) throws Exception {
         DmzjComic comic = new DmzjComic(chapterIndexUrl, startChapter, endChapter);
