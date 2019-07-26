@@ -1,7 +1,5 @@
 package entity;
 
-import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -12,7 +10,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,13 +20,16 @@ public class HtmlPage {
     private String reg;
     private StringBuffer content;
 
-    public HtmlPage(String url,boolean flag) throws IOException {
+    public HtmlPage(String url,boolean isInit) throws IOException {
         this.url = url;
-        if(flag)
+        if(isInit)
             this.init();
     }
 
-
+    /**
+     * 初始化html页面content
+     * @throws IOException
+     */
     public void init() throws IOException {
         HttpGet httpGet = new HttpGet(this.url);
         CloseableHttpClient httpClient = HttpClients.createDefault();
