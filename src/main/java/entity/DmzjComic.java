@@ -61,80 +61,15 @@ public class DmzjComic extends Comic {
         Pattern r = Pattern.compile(chapterReg);
         Matcher m = r.matcher(content);
         String name = null;
-        Long chapter_num = null;
         while (m.find()) {
             String url = m.group(1);
             name = url.substring(url.lastIndexOf("},") + 4, url.lastIndexOf("\","));
             String json = url.substring(0, url.lastIndexOf("}") + 1);
             log.debug("chapter json:{}", json);
             JSONObject jsonObject = JSONObject.parseObject(json);
-//            chapter_num = jsonObject.getLong("chapter_num");
             result = (List<String>) jsonObject.get("page_url");
         }
         return Chapter.builder().commicName(name).chapterName(chapterName).picUrls(result).build();
     }
-
-//    @Override
-//    public Integer downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception {
-//        int picCounts = 0;
-//        for (ChapterIndex index : list) {
-//            Pattern r = Pattern.compile("第(.*?)话");
-//            Matcher m = r.matcher(index.getName());
-//            if (m.find()) {
-//                int huaNum = 0;
-//                boolean notNum = false;
-//                try {
-//                    huaNum = Integer.parseInt(m.group(1));
-//                } catch (Exception e) {
-//                    notNum = true;
-//                }
-//                if (notNum || (huaNum > start && huaNum <= end)) {
-//                    System.out.println(index);
-//                    HtmlPage chapterPage = new HtmlPage(index.getUrl(), true);
-//                    Chapter chapterInfo = this.getChapter(chapterPage.getContent());
-//                    List<String> result = chapterInfo.getPage_urls();
-//                    picCounts += result.size();
-//                    for (int i = 0; i < result.size(); i++) {
-//                        String chapterPicUrl = result.get(i);
-//                        int name = i;
-////                        log.debug("chapter pic:{}", chapterPicUrl);
-//                        super.getThreadPool().submit(() -> {
-//                            try {
-//                                HtmlPage picPage = new HtmlPage(chapterPicUrl, false);
-//                                HttpEntity entity = picPage.getEntity();
-//                                String pathName = "/pic1/" + chapterInfo.getName() + "/第" + chapterInfo.getNum() + "话/";
-//                                File dic = new File(pathName);
-//                                if (!dic.exists()) {
-//                                    dic.mkdirs();
-//                                }
-//                                File file = new File(pathName + getBtName(name) + ".jpg");
-//                                if (!file.exists()) {
-//                                    file.createNewFile();
-//                                }
-//                                FileOutputStream out = new FileOutputStream(file);
-//                                InputStream in = entity.getContent();
-//                                byte[] buffer = new byte[4096];
-//                                int readLength = 0;
-//                                while ((readLength = in.read(buffer)) > 0) {
-//                                    byte[] bytes = new byte[readLength];
-//                                    System.arraycopy(buffer, 0, bytes, 0, readLength);
-//                                    out.write(bytes);
-//                                }
-//                                out.flush();
-//                                out.close();
-//                            } catch (Exception e) {
-//                                log.error("download error", e);
-//                                return false;
-//                            }
-//                            return true;
-//                        });
-//                    }
-//                }
-//            }
-//        }
-//
-//        return picCounts;
-//    }
-
 
 }

@@ -43,8 +43,6 @@ public abstract class Comic {
 
     public abstract Chapter getChapter(String content, String chapterName);
 
-//    public abstract Integer downloadChapter(List<ChapterIndex> list, Integer start, Integer end) throws Exception;
-
     public void download() throws Exception {
         List<ChapterIndex> chapterIndex = getChapterIndexUrls(this.chapterContent);
         int picCounts = 0;
