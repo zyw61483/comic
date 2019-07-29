@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,15 +21,6 @@ public class MhtComic extends Comic {
     private static final String chapterReg = "var chapterImages = (.*?);";
     private static final String commicNameReg = "<h1><a href=\"(.*?)\">(.*?)</a></h1>";
     private static final String mht = "https://www.manhuatao.com";
-
-    public MhtComic(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws IOException {
-        super(chapterIndexUrl, startChapter, endChapter);
-    }
-
-    public static void main(String[] args) throws Exception {
-        MhtComic comic = new MhtComic("https://www.manhuatao.com/manhua/5185/", 61, 100);
-        comic.download();
-    }
 
     @Override
     public List<ChapterIndex> getChapterIndexUrls(String content) {

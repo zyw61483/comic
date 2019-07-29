@@ -32,19 +32,15 @@ public abstract class Comic {
     private ExecutorService threadPool = Executors.newFixedThreadPool(15);
     private CompletionService<Boolean> completionService = new ExecutorCompletionService<>(threadPool);
 
-    public Comic(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws IOException {
-        HtmlPage chapterIndexPage = new HtmlPage(chapterIndexUrl, true);
-        this.chapterContent = chapterIndexPage.getContent();
-        this.startChapter = startChapter;
-        this.endChapter = endChapter;
-    }
-
     public abstract List<ChapterIndex> getChapterIndexUrls(String content);
 
     public abstract Chapter getChapter(String content, String chapterName);
 
-    public void download() throws Exception {
-        List<ChapterIndex> chapterIndex = getChapterIndexUrls(this.chapterContent);
+    public void download(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws Exception {
+        // 漫画目录页初始化
+        this.init(chapterIndexUrl, startChapter, endChapter);
+        // 获取章节信息
+        List<ChapterIndex> chapterIndex = this.getChapterIndexUrls(this.chapterContent);
         int picCounts = 0;
         for (ChapterIndex index : chapterIndex) {
             if (isDownloadThisChapter(index)) {
@@ -56,6 +52,13 @@ public abstract class Comic {
         }
         this.showProgress(picCounts);
         this.shutdown();
+    }
+
+    private void init(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws IOException {
+        HtmlPage chapterIndexPage = new HtmlPage(chapterIndexUrl, true);
+        this.chapterContent = chapterIndexPage.getContent();
+        this.startChapter = startChapter;
+        this.endChapter = endChapter;
     }
 
     private int downloadChapter(Chapter chapterInfo) {

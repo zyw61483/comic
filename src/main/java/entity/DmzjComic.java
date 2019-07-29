@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.StringUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,10 +24,6 @@ public class DmzjComic extends Comic {
 
     private static final String reg = "initIntroData\\((.*?)\\);";
     private static final String chapterReg = "mReader.initData\\((.*?)\\);";
-
-    public DmzjComic(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws IOException {
-        super(chapterIndexUrl, startChapter, endChapter);
-    }
 
     public List<ChapterIndex> getChapterIndexUrls(String content) {
         Pattern r = Pattern.compile(reg);
