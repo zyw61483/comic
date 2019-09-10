@@ -8,7 +8,7 @@ import java.util.List;
 @Builder
 @Data
 public class Chapter{
-    private String commicName;
+    private String comicName;
     private String chapterName;
     private List<String> picUrls;
 }

@@ -64,7 +64,7 @@ public class DmzjComic extends Comic {
             JSONObject jsonObject = JSONObject.parseObject(json);
             result = (List<String>) jsonObject.get("page_url");
         }
-        return Chapter.builder().commicName(name).chapterName(chapterName).picUrls(result).build();
+        return Chapter.builder().comicName(name).chapterName(chapterName).picUrls(result).build();
     }
 
 }

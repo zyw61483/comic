@@ -54,7 +54,7 @@ public class MhtComic extends Comic {
                 result.add("https://restp.dongqiniqin.com/" + temp);
             }
         }
-        return Chapter.builder().commicName(getComicName(content)).chapterName(chapterName).picUrls(result).build();
+        return Chapter.builder().comicName(getComicName(content)).chapterName(chapterName).picUrls(result).build();
     }
 
     private String getComicName(String content) {

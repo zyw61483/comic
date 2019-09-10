@@ -1,15 +1,19 @@
 package entity;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpEntity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -26,9 +30,13 @@ import java.util.regex.Pattern;
 @Slf4j
 @Data
 public abstract class Comic {
+    private Boolean isConvertPDF = true;
     private Integer startChapter = 0;
     private Integer endChapter = 1;
     private String chapterContent;
+    private final String PDF_PATH = "/pdf/";
+    private final String PIC_PATH = "/pic/";
+    private String comicName;
     private ExecutorService threadPool = Executors.newFixedThreadPool(15);
     private CompletionService<Boolean> completionService = new ExecutorCompletionService<>(threadPool);
 
@@ -71,7 +79,10 @@ public abstract class Comic {
                 try {
                     HtmlPage picPage = new HtmlPage(picUrl, false);
                     HttpEntity entity = picPage.getEntity();
-                    String pathName = "/pic1/" + chapterInfo.getCommicName() + "/" + chapterInfo.getChapterName();
+                    String pathName = PIC_PATH + chapterInfo.getComicName() + "/" + chapterInfo.getChapterName();
+                    if (Objects.isNull(this.getComicName())) {
+                        this.setComicName(chapterInfo.getComicName());
+                    }
                     File dic = new File(pathName);
                     if (!dic.exists()) {
                         dic.mkdirs();
@@ -144,4 +155,31 @@ public abstract class Comic {
         name.append((char) (y + 97));
         return name.toString();
     }
+
+    public void convertToPDF() throws Exception {
+
+        Rectangle rect = new Rectangle(PageSize.A4);
+        Document document = new Document(rect);
+        String comicPath = PIC_PATH + "/" + this.getComicName();
+        PdfWriter.getInstance(document, new FileOutputStream(comicPath + this.getStartChapter() + "-" + this.getEndChapter() + ".pdf"));
+        document.open();
+
+        File comic = new File(comicPath);
+        File[] chapters = comic.listFiles();
+        for (int i = 0; i < chapters.length; i++) {
+            String chapterPath = comicPath + "/" + chapters[i].getName();
+            File chapter = new File(chapterPath);
+            File[] pics = chapter.listFiles();
+            for (int j = 0; j < pics.length; j++) {
+                String picPath = chapterPath + "/" + pics[j].getName();
+                Image image = Image.getInstance(picPath);
+                image.scaleToFit(rect);
+                document.add(image);
+                document.newPage();
+            }
+        }
+
+        document.close();
+    }
+
 }
