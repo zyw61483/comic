@@ -1,9 +1,9 @@
 package entity;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfAction;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -157,19 +157,21 @@ public abstract class Comic {
     }
 
     public void convertToPDF() throws Exception {
-
         Rectangle rect = new Rectangle(PageSize.A4);
         Document document = new Document(rect);
         String comicPath = PIC_PATH + "/" + this.getComicName();
-        PdfWriter.getInstance(document, new FileOutputStream(comicPath + this.getStartChapter() + "-" + this.getEndChapter() + ".pdf"));
+        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(comicPath + this.getStartChapter() + "-" + this.getEndChapter() + ".pdf"));
         document.open();
-
+        PdfContentByte cb = writer.getDirectContent();
+        PdfOutline root = cb.getRootOutline();
         File comic = new File(comicPath);
         File[] chapters = comic.listFiles();
         for (int i = 0; i < chapters.length; i++) {
             String chapterPath = comicPath + "/" + chapters[i].getName();
             File chapter = new File(chapterPath);
             File[] pics = chapter.listFiles();
+            document.add(new Chunk(chapters[i].getName()).setLocalDestination(Integer.toString(i)));
+            new PdfOutline(root, PdfAction.gotoLocalPage(Integer.toString(i), false), chapters[i].getName());
             for (int j = 0; j < pics.length; j++) {
                 String picPath = chapterPath + "/" + pics[j].getName();
                 Image image = Image.getInstance(picPath);
@@ -178,7 +180,6 @@ public abstract class Comic {
                 document.newPage();
             }
         }
-
         document.close();
     }
 
