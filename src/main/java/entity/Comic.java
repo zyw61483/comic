@@ -7,7 +7,6 @@ import com.itextpdf.text.pdf.PdfOutline;
 import com.itextpdf.text.pdf.PdfWriter;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.http.HttpEntity;
 
 import java.io.*;
@@ -51,7 +50,7 @@ public abstract class Comic {
         List<ChapterIndex> chapterIndex = this.getChapterIndexUrls(this.chapterContent);
         int picCounts = 0;
         for (ChapterIndex index : chapterIndex) {
-            if (isDownloadThisChapter(index)) {
+            if (isHandleThisChapter(index.getName())) {
                 log.info("ChapterIndex:{}", index);
                 HtmlPage chapterPage = new HtmlPage(index.getUrl(), true);
                 Chapter chapterInfo = this.getChapter(chapterPage.getContent(), index.getName());
@@ -112,21 +111,6 @@ public abstract class Comic {
         return picUrls.size();
     }
 
-    private boolean isDownloadThisChapter(ChapterIndex index) {
-        Pattern r = Pattern.compile("第(.*?)话");
-        Matcher m = r.matcher(index.getName());
-        boolean isDownload = false;
-        if (m.find()) {
-            int huaNum = 0;
-            try {
-                huaNum = Integer.parseInt(m.group(1));
-                isDownload = huaNum >= getStartChapter() && huaNum <= getEndChapter();
-            } catch (Exception e) {
-            }
-        }
-        return isDownload;
-    }
-
     private CompletionService<Boolean> getThreadPool() {
         return completionService;
     }
@@ -167,6 +151,11 @@ public abstract class Comic {
         File comic = new File(comicPath);
         File[] chapters = comic.listFiles();
         for (int i = 0; i < chapters.length; i++) {
+
+            if(!isHandleThisChapter(chapters[i].getName())){
+                continue;
+            }
+
             String chapterPath = comicPath + "/" + chapters[i].getName();
             File chapter = new File(chapterPath);
             File[] pics = chapter.listFiles();
@@ -183,4 +172,18 @@ public abstract class Comic {
         document.close();
     }
 
+    private boolean isHandleThisChapter(String name) {
+        Pattern r = Pattern.compile("第(.*?)话");
+        Matcher m = r.matcher(name);
+        boolean isDownload = false;
+        if (m.find()) {
+            int huaNum = 0;
+            try {
+                huaNum = Integer.parseInt(m.group(1));
+                isDownload = huaNum >= getStartChapter() && huaNum <= getEndChapter();
+            } catch (Exception e) {
+            }
+        }
+        return isDownload;
+    }
 }
