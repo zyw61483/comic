@@ -1,13 +1,13 @@
 import com.google.common.collect.Maps;
 import entity.Comic;
 import entity.DmzjComic;
+import entity.MhdComic;
 import entity.MhtComic;
 import enums.Source;
 
 import java.util.Map;
 
-import static enums.Source.DMZJ;
-import static enums.Source.MHT;
+import static enums.Source.*;
 
 /**
  * ComicFactory
@@ -21,12 +21,15 @@ public class ComicFactory {
     static {
         sourceMap.put(DMZJ,new DmzjComic());
         sourceMap.put(MHT,new MhtComic());
+        sourceMap.put(MHD,new MhdComic());
     }
 
     public static Comic getComic(Source source) {
         switch (source) {
             case MHT:
                 return sourceMap.get(MHT);
+            case MHD:
+                return sourceMap.get(MHD);
             default:
                 return sourceMap.get(DMZJ);
         }

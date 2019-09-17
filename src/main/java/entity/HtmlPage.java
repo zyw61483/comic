@@ -20,6 +20,8 @@ public class HtmlPage {
     private String reg;
     private StringBuffer content;
 
+    public HtmlPage(){}
+
     public HtmlPage(String url,boolean isInit) throws IOException {
         this.url = url;
         if(isInit)

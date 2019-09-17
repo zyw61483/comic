@@ -12,6 +12,12 @@ import lombok.ToString;
 @Data
 @ToString
 public class ChapterIndex {
+    /**
+     * 第几话
+     */
     private String name;
+    /**
+     * 对应话的url
+     */
     private String url;
 }

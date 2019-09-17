@@ -9,7 +9,10 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Objects;
@@ -39,9 +42,15 @@ public abstract class Comic {
     private ExecutorService threadPool = Executors.newFixedThreadPool(15);
     private CompletionService<Boolean> completionService = new ExecutorCompletionService<>(threadPool);
 
+    /**
+     * 获取章节信息
+     *
+     * @param content
+     * @return
+     */
     public abstract List<ChapterIndex> getChapterIndexUrls(String content);
 
-    public abstract Chapter getChapter(String content, String chapterName);
+    public abstract Chapter getChapter(String content, String chapterName) throws IOException;
 
     public void download(String chapterIndexUrl, Integer startChapter, Integer endChapter) throws Exception {
         // 漫画目录页初始化
@@ -152,7 +161,7 @@ public abstract class Comic {
         File[] chapters = comic.listFiles();
         for (int i = 0; i < chapters.length; i++) {
 
-            if(!isHandleThisChapter(chapters[i].getName())){
+            if (!isHandleThisChapter(chapters[i].getName())) {
                 continue;
             }
 
@@ -172,6 +181,12 @@ public abstract class Comic {
         document.close();
     }
 
+    /**
+     * 是否处理这一话的数据
+     *
+     * @param name
+     * @return
+     */
     private boolean isHandleThisChapter(String name) {
         Pattern r = Pattern.compile("第(.*?)话");
         Matcher m = r.matcher(name);
