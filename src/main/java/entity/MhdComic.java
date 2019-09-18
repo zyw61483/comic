@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 public class MhdComic extends Comic {
 
     private static final String commicNameReg = ";decrypt20180904((.*?));";
-    ;
     private static final String cryptContentReg = "var chapterImages = \"(.*?)\"";
     private static final String chapterPathReg = "var chapterPath = \"(.*?)\"";
     private static final String chapterIndexReg = "<li>\\s*<a href=\"(.*?)\"\\s*class=\"\">\\s*<span>(.*?)</span>\\s*</a>\\s*</li>";

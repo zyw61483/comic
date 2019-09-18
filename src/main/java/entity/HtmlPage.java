@@ -10,8 +10,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Data
 @Slf4j
@@ -47,33 +45,8 @@ public class HtmlPage {
         return response.getEntity();
     }
 
-    public String getTargetData() {
-        String result = "not found";
-        Pattern r = Pattern.compile(this.reg);
-        Matcher m = r.matcher(this.content);
-        if (m.find()) {
-            result = m.group(1);
-        }
-        return result;
-    }
-
     public String getContent(){
         return this.content.toString();
     }
 
-//    public List<String> getTargetDatas() {
-//        List<String> result = Lists.newArrayList();
-//        Pattern r = Pattern.compile(this.reg);
-//        Matcher m = r.matcher(this.content);
-//        while (m.find()) {
-//            String url = m.group(1);
-//            String json = url.substring(0, url.lastIndexOf("}")+1);
-//            JSONObject jsonObject = JSONObject.parseObject(json);
-//            List<String> page_urls = (List<String>) jsonObject.get("page_url");
-//            for(String page_url:page_urls){
-//                result.add(page_url);
-//            }
-//        }
-//        return Chapter.builder().name(name).num(chapter_num).page_urls(result).build();
-//    }
 }
